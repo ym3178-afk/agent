@@ -14,14 +14,16 @@ document.addEventListener('DOMContentLoaded', function() {
   // Firebase configuration object - connects your app to your Firebase project
   // Get these values from your Firebase Console (https://console.firebase.google.com)
   
-  const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyCWvo1GFgQkbWu7ofM0oXVGH-ddFiJSirI",
   authDomain: "elian-s-chatbot.firebaseapp.com",
+  databaseURL: "https://elian-s-chatbot-default-rtdb.firebaseio.com",
   projectId: "elian-s-chatbot",
   storageBucket: "elian-s-chatbot.firebasestorage.app",
   messagingSenderId: "494672001048",
   appId: "1:494672001048:web:4066198aaac2c652136b6d",
-  };
+  measurementId: "G-W3T6NDEYBC"
+};
 
   // Initialize Firebase - connects your app to Firebase services
   firebase.initializeApp(firebaseConfig);
