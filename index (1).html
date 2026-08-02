@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<!-- This tells the browser this is an HTML5 document - always include this at the top -->
+<html lang="en">
+<!-- The html tag is the root element that contains everything on the page -->
+<!-- lang="en" tells the browser this page is in English -->
+
+<head>
+  <!-- The head section contains information about the page, not visible content -->
+
+  <!-- ------------------------------------------------------------ -->
+  <!-- Load Firebase SDK from CDN -->
+  <!-- Firebase is Google's backend-as-a-service platform that provides real-time database, authentication, and hosting -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <!-- These scripts load Firebase libraries for app initialization and real-time database functionality -->
+  <!-- ------------------------------------------------------------ -->
+
+  
+  <meta charset="UTF-8">
+  <!-- This sets the character encoding to UTF-8, which supports special characters and emojis -->
+  
+  <title>Simple Chat Bot - ChatGPT Tutorial</title>
+  <!-- This is the title that appears in the browser tab and bookmarks -->
+  
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+  <!-- This loads the Roboto font from Google Fonts for use on our page -->
+  
+  <link rel="stylesheet" href="style.css">
+  <!-- This links our CSS file to style the page - the href points to our style.css file -->
+</head>
+
+<body>
+  <!-- The body contains all the visible content that users will see on the page -->
+  
+  <header>
+    <!-- The header is typically used for navigation and site branding -->
+    
+    <div class="left">Columbia GSAPP</div>
+    <!-- This div creates a container for the left side of the header -->
+    <!-- class="left" allows us to style this specific div with CSS -->
+    
+    <div class="center">
+      <!-- This div creates a container for the center of the header -->
+      Computational Design Workflows<br>
+      <!-- This is the main text in the center -->
+      <!-- <br> creates a line break, moving the next text to a new line -->
+      <span>ChatGPT Tutorial</span>
+      <!-- span is an inline element that groups text without creating a new line -->
+      <!-- class="center" allows us to style this span differently -->
+    </div>
+    
+    <div class="right">About</div>
+    <!-- This div creates a container for the right side of the header -->
+    <!-- <a href="#">About</a> creates a clickable link (currently goes nowhere with #) -->
+  </header>
+
+  <main>
+    <!-- The main tag contains the primary content of the page -->
+    
+    <div class="project-meta">2025</div>
+    <!-- This div displays the year/project metadata -->
+    <!-- class="project-meta" allows us to style this with CSS -->
+    
+    <div class="project-title">Simple Chat Bot</div>
+    <!-- This div displays the main project title -->
+    <!-- class="project-title" allows us to style this with CSS -->
+    
+    <div class="project-subtitle">ChatGPT API Tutorial</div>
+    <!-- This div displays the student's name as a subtitle -->
+    <!-- class="project-subtitle" allows us to style this with CSS -->
+    
+    <div class="advisor">Learn how to integrate AI chat into your web applications</div>
+    <!-- This div displays advisor information -->
+    <!-- <br> creates a line break -->
+    <!-- <strong> makes the text bold for emphasis -->
+    
+    <div class="section-title">What is ChatGPT?</div>
+    <p>
+      ChatGPT is an AI language model developed by OpenAI that can understand and respond to human text. 
+      In this tutorial, we'll learn how to integrate ChatGPT into a web application using Firebase as our backend 
+      to store chat history and manage the conversation flow.
+    </p>
+
+    <!-- Chat Section -->
+    <div class="section-title">Simple Chat Bot</div>
+    <p>Type a message below and get an AI response. Your chat history is saved in Firebase!</p>
+    
+    <div class="chat-container">
+      <!-- Chat messages display area -->
+      <div class="chat-messages" id="chat-messages">
+        <!-- Messages will be added here dynamically -->
+        <div class="message bot-message">
+          <div class="message-content">
+            <strong>AI Assistant:</strong> Hello! I'm your AI assistant. How can I help you today?
+          </div>
+          <div class="message-time">Just now</div>
+        </div>
+      </div>
+      
+      <!-- Chat input area -->
+      <div class="chat-input-area">
+        <div class="input-container">
+          <input type="text" id="message-input" placeholder="Type your message here..." maxlength="500">
+          <button id="send-button" class="send-button">
+            <span>Send</span>
+          </button>
+        </div>
+        <div class="input-hint">Press Enter to send, or click the Send button</div>
+      </div>
+      
+      <!-- Chat status -->
+      <div class="chat-status">
+        <p>Status: <span id="chat-status">Ready to chat</span></p>
+      </div>
+    </div>
+
+    <!-- Tutorial Section -->
+    <div class="section-title">How It Works</div>
+    <p>
+      This app demonstrates several key concepts for building AI-powered chat applications:
+    </p>
+    
+    <div class="tutorial-steps">
+      <div class="step">
+        <h4>1. Firebase Configuration</h4>
+        <p>We use Firebase to store chat messages and manage real-time updates across users.</p>
+      </div>
+      
+      <div class="step">
+        <h4>2. ChatGPT API Integration</h4>
+        <p>When you send a message, it's processed through the ChatGPT API to generate an AI response.</p>
+      </div>
+      
+      <div class="step">
+        <h4>3. Real-time Updates</h4>
+        <p>Firebase automatically updates the chat interface when new messages are added.</p>
+      </div>
+      
+      <div class="step">
+        <h4>4. Message History</h4>
+        <p>All conversations are stored in Firebase, so you can see your chat history when you return.</p>
+      </div>
+    </div>
+
+    <!-- API Key Section -->
+    <div class="section-title">Setup Required</div>
+    <p>
+      To use this chat bot, you'll need to set up your own ChatGPT API key:
+    </p>
+    
+    <div class="setup-steps">
+      <div class="setup-step">
+        <h4>1. Get OpenAI API Key</h4>
+        <p>Visit <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a> and create an API key.</p>
+      </div>
+      
+      <div class="setup-step">
+        <h4>2. Configure Firebase</h4>
+        <p>Set up a Firebase project and update the configuration in the JavaScript file.</p>
+      </div>
+      
+      <div class="setup-step">
+        <h4>3. Add API Key</h4>
+        <p>Replace the placeholder API key in the code with your actual OpenAI API key.</p>
+      </div>
+    </div>
+
+    <!-- Status Display -->
+    <div class="section-title">Connection Status</div>
+    <div id="connection-status" class="status-display">
+      <p>Connecting to Firebase...</p>
+    </div>
+  </main>
+  <!-- End of main content area -->
+  
+
+  <!-- ------------------------------------------------------------ -->
+
+  <!-- Load JavaScript file -->
+  <script src="chat-bot.js"></script>
+
+  <!-- ------------------------------------------------------------ -->
+</body>
+<!-- End of body - all visible content goes above this line -->
+</html>
+<!-- End of HTML document -->
