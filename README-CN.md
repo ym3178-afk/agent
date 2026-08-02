@@ -1,91 +1,47 @@
-# Elian Chatbot：GitHub Pages + Firebase + Cloudflare Worker
+# Elian Chatbot：GitHub Pages 可打开版
 
-这个版本不使用 Firebase Cloud Functions，因此 Firebase 可以继续保留在 Spark 免费方案。OpenAI API Key 保存在 Cloudflare Worker 的加密 Secret 中，不会出现在 GitHub 或浏览器代码里。
+## A. 上传 GitHub 的文件
 
-## 一、创建 Cloudflare Worker（不需要 npm）
-
-1. 登录 Cloudflare Dashboard。
-2. 打开 **Workers & Pages**。
-3. 点击 **Create → Worker → Deploy**。
-4. 进入 Worker 后点击 **Edit code**。
-5. 删除默认代码，把 `cloudflare-worker.js` 的全部内容粘贴进去。
-6. 点击 **Deploy**。
-
-## 二、添加 OpenAI Secret
-
-1. 打开该 Worker 的 **Settings**。
-2. 进入 **Variables and Secrets**。
-3. 点击 **Add**。
-4. Type 选择 **Secret**。
-5. Variable name 填：
-
-   `OPENAI_API_KEY`
-
-6. Value 粘贴一枚全新 OpenAI API Key。
-7. 保存并 Deploy。
-
-不要把 Key 写进 `chat-bot.js`，也不要上传 GitHub。之前公开过的 Key 必须删除并重新创建。
-
-## 三、复制 Worker URL
-
-Worker 部署后会得到类似：
-
-`https://elian-chatbot-api.your-account.workers.dev`
-
-在浏览器中打开：
-
-`https://elian-chatbot-api.your-account.workers.dev/chat`
-
-看到 `Method not allowed` 属于正常现象，说明 Worker 在线。
-
-## 四、修改 chat-bot.js
-
-找到：
-
-```js
-const WORKER_URL = "https://YOUR-WORKER-NAME.YOUR-SUBDOMAIN.workers.dev/chat";
-```
-
-替换为你的真实 URL，例如：
-
-```js
-const WORKER_URL = "https://elian-chatbot-api.your-account.workers.dev/chat";
-```
-
-必须保留最后的 `/chat`。
-
-## 五、上传 GitHub Pages
-
-把下面三个文件上传到仓库根目录并覆盖旧文件：
+把以下文件直接放到仓库 `main` 分支的根目录：
 
 - `index.html`
 - `style.css`
 - `chat-bot.js`
+- `.nojekyll`
 
-GitHub 仓库中不要再保留 `index (1).html` 或带括号的重复文件。
+不要改名，尤其首页必须准确叫 `index.html`。
 
-Pages 设置：
+GitHub 仓库：Settings → Pages → Deploy from a branch → `main` → `/(root)` → Save。
 
-- Source：Deploy from a branch
-- Branch：main
-- Folder：/(root)
+网页地址：`https://ym3178-afk.github.io/agent/`
 
-网站地址：
+## B. 部署 AI 后端
 
-`https://ym3178-afk.github.io/agent/`
+GitHub Pages 只能托管静态页面。AI 必须由 Firebase Functions 调用。
 
-## 六、测试
+在整个项目目录运行：
 
-打开网站，按 `Command + Shift + R` 强制刷新，然后发送消息。
+```bash
+npm install -g firebase-tools
+firebase login
+firebase use elian-s-chatbot
+cd functions
+npm install
+cd ..
+firebase functions:secrets:set OPENAI_API_KEY
+firebase deploy --only functions:chat
+```
 
-浏览器 Console 应显示：
+Secret 提示出现后，粘贴一枚全新的 OpenAI API Key。不要把 Key 写入 `chat-bot.js`，也不要上传到 GitHub。
 
-`ELIAN_CHATBOT_VERSION: cloudflare-v1`
+## C. 检查
 
-## 常见错误
+打开网页，按 F12，在 Console 应看到：
 
-- `Cloudflare Worker URL has not been added`：还没有在 `chat-bot.js` 填真实 Worker URL。
-- `OPENAI_API_KEY secret is missing`：Cloudflare 没添加 Secret，或者添加后没有重新 Deploy。
-- `invalid_api_key`：Key 无效或已经被撤销。
-- `insufficient_quota`：OpenAI API 没有余额。ChatGPT Plus 不包含 API 额度。
-- `Origin is not allowed`：确认网站使用 `https://ym3178-afk.github.io/agent/`；若换了 GitHub 用户名，需要修改 Worker 里的 `ALLOWED_ORIGINS`。
+`ELIAN_CHATBOT_VERSION: github-pages-fixed-v4`
+
+页面能打开但 AI 不回复时，运行：
+
+```bash
+firebase functions:log --only chat
+```
