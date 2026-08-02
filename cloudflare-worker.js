@@ -1,5 +1,5 @@
-// Paste this entire file into a Cloudflare Worker.
-// Add OPENAI_API_KEY as an encrypted Worker Secret — never paste it into this code.
+// Deploy this file as a Cloudflare Worker.
+// Add OPENAI_API_KEY under Settings -> Variables and Secrets -> Secret.
 
 const ALLOWED_ORIGINS = new Set([
   "https://ym3178-afk.github.io",
@@ -7,9 +7,13 @@ const ALLOWED_ORIGINS = new Set([
   "http://localhost:5500"
 ]);
 
+function isAllowedOrigin(origin) {
+  return !origin || ALLOWED_ORIGINS.has(origin);
+}
+
 function corsHeaders(origin) {
   const headers = {
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin"
@@ -18,11 +22,10 @@ function corsHeaders(origin) {
   if (origin && ALLOWED_ORIGINS.has(origin)) {
     headers["Access-Control-Allow-Origin"] = origin;
   }
-
   return headers;
 }
 
-function jsonResponse(body, status, origin) {
+function json(body, status, origin) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
@@ -32,8 +35,12 @@ function jsonResponse(body, status, origin) {
   });
 }
 
-function extractOutputText(responseData) {
-  return (responseData.output || [])
+function extractOutputText(data) {
+  if (typeof data.output_text === "string" && data.output_text.trim()) {
+    return data.output_text.trim();
+  }
+
+  return (data.output || [])
     .flatMap((item) => Array.isArray(item.content) ? item.content : [])
     .filter((part) => part && part.type === "output_text" && typeof part.text === "string")
     .map((part) => part.text)
@@ -46,43 +53,40 @@ export default {
     const origin = request.headers.get("Origin") || "";
     const url = new URL(request.url);
 
+    if (!isAllowedOrigin(origin)) {
+      return json({ error: "Origin is not allowed." }, 403, origin);
+    }
+
     if (request.method === "OPTIONS") {
-      if (origin && !ALLOWED_ORIGINS.has(origin)) {
-        return jsonResponse({ error: "Origin is not allowed." }, 403, origin);
-      }
       return new Response(null, { status: 204, headers: corsHeaders(origin) });
     }
 
-    if (origin && !ALLOWED_ORIGINS.has(origin)) {
-      return jsonResponse({ error: "Origin is not allowed." }, 403, origin);
+    if (url.pathname === "/health" && request.method === "GET") {
+      return json({ ok: true, service: "elian-chatbot-worker" }, 200, origin);
     }
 
     if (url.pathname !== "/chat") {
-      return jsonResponse({ error: "Not found." }, 404, origin);
+      return json({ error: "Not found." }, 404, origin);
     }
 
     if (request.method !== "POST") {
-      return jsonResponse({ error: "Method not allowed." }, 405, origin);
+      return json({ error: "Method not allowed." }, 405, origin);
     }
 
     if (!env.OPENAI_API_KEY) {
-      return jsonResponse({ error: "OPENAI_API_KEY secret is missing." }, 500, origin);
+      return json({ error: "OPENAI_API_KEY secret is missing." }, 500, origin);
     }
 
     let payload;
     try {
       payload = await request.json();
     } catch (_) {
-      return jsonResponse({ error: "Request body must be valid JSON." }, 400, origin);
+      return json({ error: "Request body must be valid JSON." }, 400, origin);
     }
 
     const message = typeof payload.message === "string" ? payload.message.trim() : "";
-    if (!message) {
-      return jsonResponse({ error: "Message cannot be empty." }, 400, origin);
-    }
-    if (message.length > 1000) {
-      return jsonResponse({ error: "Message is too long." }, 400, origin);
-    }
+    if (!message) return json({ error: "Message cannot be empty." }, 400, origin);
+    if (message.length > 1000) return json({ error: "Message is too long." }, 400, origin);
 
     let openAIResponse;
     try {
@@ -100,31 +104,20 @@ export default {
         })
       });
     } catch (_) {
-      return jsonResponse({ error: "The Worker could not reach OpenAI." }, 502, origin);
+      return json({ error: "The Worker could not reach OpenAI." }, 502, origin);
     }
 
-    let data = {};
-    try {
-      data = await openAIResponse.json();
-    } catch (_) {
-      // Handled below.
-    }
-
+    const data = await openAIResponse.json().catch(() => ({}));
     if (!openAIResponse.ok) {
-      const code = data?.error?.code || "openai_error";
-      const detail = data?.error?.message || `OpenAI returned HTTP ${openAIResponse.status}.`;
-      return jsonResponse(
-        { error: `OpenAI request failed: ${code}.`, detail },
-        openAIResponse.status >= 500 ? 502 : openAIResponse.status,
-        origin
-      );
+      return json({
+        error: `OpenAI request failed: ${data?.error?.code || "openai_error"}.`,
+        detail: data?.error?.message || `OpenAI returned HTTP ${openAIResponse.status}.`
+      }, openAIResponse.status >= 500 ? 502 : openAIResponse.status, origin);
     }
 
     const reply = extractOutputText(data);
-    if (!reply) {
-      return jsonResponse({ error: "OpenAI returned no text." }, 502, origin);
-    }
+    if (!reply) return json({ error: "OpenAI returned no text." }, 502, origin);
 
-    return jsonResponse({ reply }, 200, origin);
+    return json({ reply }, 200, origin);
   }
 };
