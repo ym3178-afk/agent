@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elian's Chatbot</title>
+
+  <!-- Firebase compat SDKs: app → database → functions -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <header>
+    <div class="left">Columbia GSAPP</div>
+    <div class="center">
+      Computational Design Workflows<br>
+      <span>Firebase + OpenAI Tutorial</span>
+    </div>
+    <div class="right">About</div>
+  </header>
+
+  <main>
+    <div class="project-meta">2026</div>
+    <div class="project-title">Elian's Chatbot</div>
+    <div class="project-subtitle">Firebase + OpenAI API</div>
+    <div class="advisor">A real-time chatbot with a server-side API connection</div>
+
+    <div class="section-title">What is this project?</div>
+    <p>
+      This project connects a web chat interface to Firebase Realtime Database and a secure
+      Firebase Cloud Function. The Cloud Function calls the OpenAI API without exposing the
+      private API key in the browser.
+    </p>
+
+    <div class="section-title">Simple Chat Bot</div>
+    <p>Type a message below. Your current browser uses a private session ID for its chat history.</p>
+
+    <div class="chat-container">
+      <div class="chat-messages" id="chat-messages" aria-live="polite">
+        <div class="message bot-message">
+          <div class="message-content">
+            <strong>AI Assistant:</strong> Hello! I'm your AI assistant. How can I help you today?
+          </div>
+          <div class="message-time">Just now</div>
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <div class="input-container">
+          <input
+            type="text"
+            id="message-input"
+            placeholder="Type your message here..."
+            maxlength="1000"
+            autocomplete="off"
+          >
+          <button id="send-button" class="send-button" type="button">
+            <span>Send</span>
+          </button>
+        </div>
+        <div class="input-hint">Press Enter to send, or click the Send button</div>
+      </div>
+
+      <div class="chat-status">
+        <p>Status: <span id="chat-status">Ready to chat</span></p>
+      </div>
+    </div>
+
+    <div class="section-title">How It Works</div>
+    <p>This app demonstrates four parts of an AI-powered web application:</p>
+
+    <div class="tutorial-steps">
+      <div class="step">
+        <h4>1. Firebase Configuration</h4>
+        <p>The browser connects to your Firebase project and listens for real-time messages.</p>
+      </div>
+
+      <div class="step">
+        <h4>2. Secure OpenAI Connection</h4>
+        <p>The browser calls a Firebase Cloud Function; the OpenAI API key stays in Secret Manager.</p>
+      </div>
+
+      <div class="step">
+        <h4>3. Real-time Updates</h4>
+        <p>Messages written by the Cloud Function appear automatically in the chat interface.</p>
+      </div>
+
+      <div class="step">
+        <h4>4. Session History</h4>
+        <p>Each browser receives a random session ID stored locally, keeping histories separated.</p>
+      </div>
+    </div>
+
+    <div class="section-title">Setup Required</div>
+    <p>The Firebase project information is already configured. Complete the server deployment steps in README.md.</p>
+
+    <div class="setup-steps">
+      <div class="setup-step">
+        <h4>1. Create a New OpenAI API Key</h4>
+        <p>Do not place the key in this HTML or in chat-bot.js.</p>
+      </div>
+
+      <div class="setup-step">
+        <h4>2. Save the Key as a Firebase Secret</h4>
+        <p>Run <code>firebase functions:secrets:set OPENAI_API_KEY</code> in the project folder.</p>
+      </div>
+
+      <div class="setup-step">
+        <h4>3. Deploy</h4>
+        <p>Run <code>firebase deploy --only functions,database,hosting</code>.</p>
+      </div>
+    </div>
+
+    <div class="section-title">Connection Status</div>
+    <div id="connection-status" class="status-display">
+      <p>Connecting to Firebase...</p>
+    </div>
+  </main>
+
+  <script src="chat-bot.js?v=secure-v3"></script>
+</body>
+</html>
