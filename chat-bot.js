@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // ChatGPT API configuration - get an API key from OpenAI
   // Visit: https://platform.openai.com/api-keys to create your API key
   
-  const OPENAI_API_KEY = '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';
+  const OPENAI_API_KEY = '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';
   const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
   
   // Rate limiting configuration
