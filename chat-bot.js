@@ -1,128 +1,225 @@
-(() => {
-  "use strict";
+// GitHub Pages frontend + Firebase Realtime Database + Cloudflare Worker backend.
+// Never place an OpenAI API key in this file.
 
-  const VERSION = "github-pages-fixed-v4";
-  console.log("ELIAN_CHATBOT_VERSION:", VERSION);
-
+document.addEventListener("DOMContentLoaded", () => {
   const firebaseConfig = {
     apiKey: "AIzaSyCWvo1GFgQkbWu7ofM0oXVGH-ddFiJSirI",
     authDomain: "elian-s-chatbot.firebaseapp.com",
+    databaseURL: "https://elian-s-chatbot-default-rtdb.firebaseio.com",
     projectId: "elian-s-chatbot",
     storageBucket: "elian-s-chatbot.firebasestorage.app",
     messagingSenderId: "494672001048",
-    appId: "1:494672001048:web:4066198aaac2c652136b6d"
+    appId: "1:494672001048:web:4066198aaac2c652136b6d",
+    measurementId: "G-W3T6NDEYBC"
   };
 
-  const STORAGE_KEY = "elian-chatbot-history-v4";
-  const MAX_HISTORY = 30;
+  // Replace this once with your deployed Cloudflare Worker URL.
+  // Keep /chat at the end.
+  const WORKER_URL = "https://elian-s-chatbot-default-rtdb.firebaseio.com/";
 
-  window.addEventListener("DOMContentLoaded", () => {
-    const messagesEl = document.getElementById("chat-messages");
-    const form = document.getElementById("chat-form");
-    const input = document.getElementById("message-input");
-    const button = document.getElementById("send-button");
-    const chatStatus = document.getElementById("chat-status");
-    const connectionStatus = document.getElementById("connection-status");
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
 
-    if (!window.firebase) {
-      connectionStatus.textContent = "Firebase SDK failed to load";
-      renderMessage(messagesEl, "error", "Firebase SDK did not load. Refresh the page and check your internet connection.");
+  const database = firebase.database();
+  const chatMessages = document.getElementById("chat-messages");
+  const messageInput = document.getElementById("message-input");
+  const sendButton = document.getElementById("send-button");
+  const chatStatus = document.getElementById("chat-status");
+  const connectionStatus = document.getElementById("connection-status");
+
+  if (!chatMessages || !messageInput || !sendButton || !chatStatus || !connectionStatus) {
+    console.error("Required HTML elements are missing.");
+    return;
+  }
+
+  const messagesRef = database.ref("chat/messages");
+
+  messagesRef.on(
+    "value",
+    (snapshot) => {
+      const messages = snapshot.val() || {};
+      chatMessages.innerHTML = "";
+
+      Object.values(messages)
+        .sort((a, b) => Number(a.timestamp || 0) - Number(b.timestamp || 0))
+        .forEach((message) => {
+          addMessageToDisplay(
+            String(message.text || ""),
+            message.sender === "user" ? "user" : "bot",
+            Number(message.timestamp || Date.now())
+          );
+        });
+
+      if (!Object.keys(messages).length) {
+        addMessageToDisplay(
+          "Hello! I'm your AI assistant. How can I help you today?",
+          "bot",
+          Date.now()
+        );
+      }
+
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    },
+    (error) => {
+      console.error("Firebase read error:", error);
+      updateChatStatus("Firebase database error");
+      showError("Firebase could not load the chat history. Check Realtime Database rules.");
+    }
+  );
+
+  sendButton.addEventListener("click", sendMessage);
+  messageInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      sendMessage();
+    }
+  });
+
+  async function sendMessage() {
+    const messageText = messageInput.value.trim();
+    if (!messageText) return;
+
+    if (WORKER_URL.includes("YOUR-WORKER")) {
+      showError("Cloudflare Worker URL has not been added to chat-bot.js yet.");
       return;
     }
 
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const callChat = firebase.app().functions("us-central1").httpsCallable("chat");
-    connectionStatus.textContent = "Firebase client ready";
+    setSendButtonState(true);
+    updateChatStatus("Sending message...");
 
-    let history = loadHistory();
-    if (history.length === 0) {
-      history.push({ role: "bot", text: "Hello! I’m Elian’s AI assistant. How can I help?", time: Date.now() });
-      saveHistory(history);
-    }
-    renderHistory(messagesEl, history);
-
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const text = input.value.trim();
-      if (!text || button.disabled) return;
-
-      history.push({ role: "user", text, time: Date.now() });
-      history = history.slice(-MAX_HISTORY);
-      saveHistory(history);
-      renderHistory(messagesEl, history);
-      input.value = "";
-      button.disabled = true;
-      button.textContent = "Sending…";
-      chatStatus.textContent = "Waiting for AI…";
-
-      try {
-        const result = await callChat({ message: text });
-        const reply = result?.data?.reply;
-        if (typeof reply !== "string" || !reply.trim()) {
-          throw new Error("The function returned an empty response.");
-        }
-        history.push({ role: "bot", text: reply.trim(), time: Date.now() });
-        history = history.slice(-MAX_HISTORY);
-        saveHistory(history);
-        renderHistory(messagesEl, history);
-        chatStatus.textContent = "Ready";
-      } catch (error) {
-        console.error("Firebase callable error:", error);
-        const readable = explainError(error);
-        renderMessage(messagesEl, "error", readable);
-        chatStatus.textContent = "AI unavailable";
-      } finally {
-        button.disabled = false;
-        button.textContent = "Send";
-        input.focus();
-      }
-    });
-  });
-
-  function explainError(error) {
-    const code = String(error?.code || "");
-    const message = String(error?.message || "");
-    if (code.includes("not-found")) return "The Firebase function ‘chat’ is not deployed yet.";
-    if (code.includes("unauthenticated")) return "Authentication is required by the Firebase function.";
-    if (code.includes("resource-exhausted")) return "The OpenAI API quota or rate limit has been reached. Check API billing and limits.";
-    if (code.includes("permission-denied")) return "Firebase denied this request. Check the function and project permissions.";
-    if (code.includes("internal")) return "The backend received the request but OpenAI could not respond. Check Firebase Functions logs and API billing.";
-    if (message.includes("Failed to fetch")) return "The browser could not reach Firebase Functions. Check deployment and network access.";
-    return `The AI request failed: ${message || code || "unknown error"}`;
-  }
-
-  function loadHistory() {
     try {
-      const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
+      await saveMessageToFirebase(messageText, "user");
+      messageInput.value = "";
+
+      updateChatStatus("Getting AI response...");
+      const aiResponse = await getAIResponse(messageText);
+
+      await saveMessageToFirebase(aiResponse, "bot");
+      updateChatStatus("Ready to chat");
+    } catch (error) {
+      console.error("Send error:", error);
+      updateChatStatus("Error");
+      showError(error.message || "The message could not be sent.");
+    } finally {
+      setSendButtonState(false);
+      messageInput.focus();
     }
   }
 
-  function saveHistory(history) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(history.slice(-MAX_HISTORY)));
+  async function saveMessageToFirebase(text, sender) {
+    await messagesRef.push({
+      text: String(text),
+      sender,
+      timestamp: firebase.database.ServerValue.TIMESTAMP
+    });
   }
 
-  function renderHistory(container, history) {
-    container.innerHTML = "";
-    history.forEach((item) => renderMessage(container, item.role, item.text, item.time));
-    container.scrollTop = container.scrollHeight;
+  async function getAIResponse(message) {
+    let response;
+
+    try {
+      response = await fetch(WORKER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message })
+      });
+    } catch (error) {
+      throw new Error("Could not reach the Cloudflare Worker. Check its URL and deployment.");
+    }
+
+    let data = {};
+    try {
+      data = await response.json();
+    } catch (_) {
+      // Keep the fallback error below.
+    }
+
+    if (!response.ok) {
+      const detail = data.detail ? ` ${data.detail}` : "";
+      throw new Error((data.error || `Backend error (${response.status}).`) + detail);
+    }
+
+    if (!data.reply || typeof data.reply !== "string") {
+      throw new Error("The backend returned an empty AI response.");
+    }
+
+    return data.reply.trim();
   }
 
-  function renderMessage(container, role, text, time = Date.now()) {
-    const box = document.createElement("div");
-    box.className = `message ${role === "user" ? "user-message" : role === "error" ? "error-message" : "bot-message"}`;
+  function addMessageToDisplay(text, sender, timestamp) {
+    const messageDiv = document.createElement("div");
+    messageDiv.className = `message ${sender}-message`;
 
     const content = document.createElement("div");
-    content.textContent = text;
+    content.className = "message-content";
 
-    const timestamp = document.createElement("div");
-    timestamp.className = "message-time";
-    timestamp.textContent = new Date(time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    const label = document.createElement("strong");
+    label.textContent = sender === "user" ? "You: " : "AI Assistant: ";
 
-    box.append(content, timestamp);
-    container.appendChild(box);
-    container.scrollTop = container.scrollHeight;
+    const body = document.createElement("span");
+    body.textContent = text;
+
+    const time = document.createElement("div");
+    time.className = "message-time";
+    time.textContent = formatTimestamp(timestamp);
+
+    content.append(label, body);
+    messageDiv.append(content, time);
+    chatMessages.appendChild(messageDiv);
   }
-})();
+
+  function formatTimestamp(timestamp) {
+    const date = new Date(timestamp);
+    if (Number.isNaN(date.getTime())) return "";
+
+    const minutes = Math.floor((Date.now() - date.getTime()) / 60000);
+    if (minutes < 1) return "Just now";
+    if (minutes < 60) return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function setSendButtonState(disabled) {
+    sendButton.disabled = disabled;
+    sendButton.textContent = disabled ? "Sending..." : "Send";
+    sendButton.style.opacity = disabled ? "0.6" : "1";
+  }
+
+  function updateChatStatus(text) {
+    chatStatus.textContent = text;
+  }
+
+  function showError(message) {
+    const box = document.createElement("div");
+    box.className = "error-message";
+    box.textContent = message;
+    box.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #f44336;
+      color: white;
+      padding: 16px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.45;
+      z-index: 1000;
+      max-width: 520px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    `;
+    document.body.appendChild(box);
+    setTimeout(() => box.remove(), 12000);
+  }
+
+  database.ref(".info/connected").on("value", (snapshot) => {
+    const connected = snapshot.val() === true;
+    connectionStatus.textContent = connected
+      ? "✅ Connected to Firebase"
+      : "❌ Disconnected from Firebase";
+    connectionStatus.style.color = connected ? "#4CAF50" : "#f44336";
+  });
+
+  messageInput.focus();
+  updateChatStatus("Ready to chat");
+  console.log("ELIAN_CHATBOT_VERSION: cloudflare-v1");
+});
