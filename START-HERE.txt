@@ -1,5 +1,0 @@
-1. 把 index.html、style.css、app.js、.nojekyll 上传到 GitHub 仓库根目录。
-2. 把 cloudflare-worker.js 部署到 Cloudflare Worker。
-3. 在 Cloudflare Worker 添加 Secret：OPENAI_API_KEY。
-4. 打开 GitHub Pages，在网页顶部粘贴 workers.dev 地址，点击 Save & Test。
-5. 页面底部必须显示 Build: github-static-final-20260802。
