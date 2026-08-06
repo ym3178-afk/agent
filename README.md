@@ -1,96 +1,46 @@
-# GitHub Pages + Firebase + OpenAI Chat
+# Tutorial 4 — Secure OpenAI + Firebase Functions + Firebase Hosting
 
-This folder is prepared for the existing site:
+This package is configured for the Firebase project `elian-s-chatbot`.
 
-`https://ym3178-afk.github.io/agent/`
+## Before deployment
 
-The root files (`index.html`, `style.css`, and `chat-bot.js`) are the GitHub Pages frontend. The `functions/` folder is the Firebase backend that securely calls OpenAI.
+1. In Firebase Console, upgrade the project to the Blaze plan and make sure its Google Cloud Billing account is open.
+2. In **Authentication → Sign-in method**, enable **Google**.
+3. In **Authentication → Settings → Authorized domains**, make sure these domains are present:
+   - `localhost`
+   - `elian-s-chatbot.web.app`
+   - `elian-s-chatbot.firebaseapp.com`
+4. Delete any OpenAI API key that was previously exposed in browser JavaScript or GitHub. Create a new key.
 
-## Important first step
+## Deploy
 
-Delete every OpenAI API key that was previously placed in `chat-bot.js` or uploaded to GitHub. Create a new key for the Firebase secret.
-
-## 1. Install Node.js
-
-Install the current Node.js LTS release. Then open a new Terminal window and verify:
+Use Node.js 22, then run these commands from this project folder:
 
 ```bash
 node -v
-npm -v
-```
-
-## 2. Install and sign in to Firebase CLI
-
-Run from Terminal:
-
-```bash
-npm install -g firebase-tools
+firebase --version
 firebase login
-```
+firebase use elian-s-chatbot
 
-## 3. Install backend packages
-
-Open Terminal in this project folder and run:
-
-```bash
 cd functions
 npm install
 cd ..
-```
 
-## 4. Store the new OpenAI key securely
-
-From the project root, run:
-
-```bash
 firebase functions:secrets:set OPENAI_API_KEY
+firebase deploy --only functions,hosting
 ```
 
-Paste only the new `sk-...` key when prompted. Do not write `Bearer` and do not place the key in a JavaScript file.
+When prompted by `firebase functions:secrets:set OPENAI_API_KEY`, paste only the new `sk-...` key. Do not type `Bearer`.
 
-## 5. Deploy the backend and database rules
+After a successful deployment, open:
 
-The Firebase project must support Cloud Functions deployment. Run:
+- https://elian-s-chatbot.web.app
+- https://elian-s-chatbot.firebaseapp.com
+
+## Local test
 
 ```bash
-firebase deploy --only functions,database
+firebase emulators:start
 ```
 
-The frontend is already configured to call:
-
-`https://us-central1-elian-s-chatbot.cloudfunctions.net/chatWithAI`
-
-## 6. Upload to GitHub
-
-Upload the complete contents of this folder to the root of the GitHub repository used by the `agent` site. These filenames must remain exact:
-
-```text
-index.html
-style.css
-chat-bot.js
-```
-
-In GitHub, confirm:
-
-```text
-Settings → Pages → Deploy from a branch → main → /root
-```
-
-After GitHub finishes deploying, open:
-
-`https://ym3178-afk.github.io/agent/`
-
-The page should display both:
-
-```text
-Connected — Firebase database
-Connected — AI backend
-```
-
-## Notes
-
-- GitHub Pages serves only the public frontend.
-- Firebase Cloud Functions runs the private backend.
-- Firebase Secret Manager stores the OpenAI key.
-- The demo allows 20 AI requests per hour per network.
-- Chat history is publicly readable on this class demo. Do not submit private information.
+The frontend calls the callable Cloud Function `chatWithAI`; it never sends an OpenAI API key to the browser.
