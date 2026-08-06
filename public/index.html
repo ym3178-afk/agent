@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure OpenAI Hello World - Firebase Functions</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Secure OpenAI Hello World</h1>
+
+    <div class="auth-section">
+      <h3>Authentication</h3>
+      <p>Status: <span id="auth-status" class="status-indicator status-not-authenticated">Not authenticated</span></p>
+      <button id="login-btn" type="button">Login with Google</button>
+      <button id="logout-btn" type="button" style="display: none;">Logout</button>
+    </div>
+
+    <div class="input-group">
+      <input type="text" id="user-input" placeholder="Type your message..." maxlength="500" disabled>
+    </div>
+    <button id="send-btn" type="button" disabled>Send Message</button>
+    <div id="output" role="status" aria-live="polite">Please login to start chatting with AI...</div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
+  <script src="secure-openai.js"></script>
+</body>
+</html>
