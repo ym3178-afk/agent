@@ -1,0 +1,458 @@
+/* Import Google Fonts - this loads the Roboto font family from Google's servers */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+/* Style the entire body of the webpage */
+body {
+  font-family: 'Roboto', sans-serif;  /* Set the font to Roboto, with sans-serif as backup */
+  background-color: #ffffff;          /* Set background color to white */
+  color: #111;                        /* Set text color to dark gray (almost black) */
+  margin: 0;                          /* Remove default spacing around the body */
+  padding: 0;                         /* Remove default internal spacing */
+}
+
+/* Style the header section at the top of the page */
+header {
+  display: flex;                      /* Use flexbox layout for flexible positioning */
+  justify-content: space-between;     /* Spread items evenly across the header */
+  align-items: center;                /* Center items vertically */
+  padding: 24px 40px;                 /* Add 24px top/bottom, 40px left/right spacing inside */
+  border-bottom: 1px solid #ccc;      /* Add a light gray line at the bottom */
+  font-size: 14px;                    /* Set font size to 14 pixels */
+}
+
+/* Style the left section of the header */
+header .left {
+  color: #aaa;                        /* Set text color to light gray */
+}
+
+/* Style the center section of the header */
+header .center {
+  font-weight: 400;                   /* Set font weight to normal (not bold) */
+  text-align: center;                 /* Center the text horizontally */
+}
+
+/* Style the span element inside the center section */
+header .center span {
+  font-size: 12px;                    /* Make this text smaller (12 pixels) */
+  color: #888;                        /* Set text color to medium gray */
+}
+
+/* Style links in the right section of the header */
+header .right a {
+  color: #000;                        /* Set link color to black */
+  text-decoration: none;              /* Remove the underline from links */
+  font-weight: 400;                   /* Set font weight to normal */
+}
+
+/* Style the main content area */
+main {
+  max-width: 800px;                   /* Limit the maximum width to 800 pixels */
+  margin: 60px auto;                  /* Add 60px top/bottom margin, center horizontally */
+  padding: 0 20px;                    /* Add 20px left/right padding, no top/bottom */
+}
+
+/* Style the project year/date */
+.project-meta {
+  font-size: 14px;                    /* Set font size to 14 pixels */
+  color: #999;                        /* Set text color to light gray */
+  margin-bottom: 8px;                 /* Add 8 pixels of space below this element */
+}
+
+/* Style the main project title */
+.project-title {
+  font-size: 24px;                    /* Set font size to 24 pixels (larger) */
+  font-weight: 400;                   /* Set font weight to normal (not bold) */
+  margin-bottom: 4px;                 /* Add 4 pixels of space below this element */
+}
+
+/* Style the project subtitle */
+.project-subtitle {
+  font-size: 16px;                    /* Set font size to 16 pixels */
+  color: #999;                        /* Set text color to light gray */
+  margin-bottom: 24px;                /* Add 24 pixels of space below this element */
+}
+
+/* Style the advisor information */
+.advisor {
+  font-size: 14px;                    /* Set font size to 14 pixels */
+  margin-bottom: 40px;                /* Add 40 pixels of space below this element */
+  color: #333;                        /* Set text color to dark gray */
+}
+
+/* Style section titles (like "Abstract", "Motivation") */
+.section-title {
+  font-weight: 700;                   /* Make the text bold */
+  text-transform: uppercase;          /* Convert text to all capital letters */
+  margin-top: 40px;                   /* Add 40 pixels of space above this element */
+  margin-bottom: 12px;                /* Add 12 pixels of space below this element */
+  font-size: 14px;                    /* Set font size to 14 pixels */
+}
+
+/* Style all paragraph elements */
+p {
+  font-size: 16px;                    /* Set font size to 16 pixels */
+  line-height: 1.6;                   /* Set space between lines to 1.6 times the font size */
+  margin-bottom: 24px;                /* Add 24 pixels of space below each paragraph */
+  color: #111;                        /* Set text color to dark gray (almost black) */
+}
+
+/* ======================================== */
+/* CHAT CONTAINER STYLES */
+/* ======================================== */
+
+/* Main chat container */
+.chat-container {
+  margin-bottom: 40px;                /* Space below the chat */
+  border: 2px solid #e0e0e0;          /* Subtle border */
+  border-radius: 12px;                /* Rounded corners */
+  background-color: #fafafa;          /* Very light background */
+  overflow: hidden;                   /* Hide overflow for rounded corners */
+}
+
+/* Chat messages display area */
+.chat-messages {
+  height: 400px;                      /* Fixed height for messages */
+  overflow-y: auto;                   /* Scroll vertically when needed */
+  padding: 20px;                      /* Internal spacing */
+  background-color: white;            /* White background for messages */
+}
+
+/* Individual message styling */
+.message {
+  margin-bottom: 16px;                /* Space between messages */
+  padding: 12px 16px;                 /* Internal spacing */
+  border-radius: 12px;                /* Rounded corners */
+  max-width: 80%;                     /* Limit message width */
+  word-wrap: break-word;              /* Wrap long words */
+  position: relative;                 /* For positioning elements */
+}
+
+/* User message styling */
+.user-message {
+  background: linear-gradient(135deg, #007bff, #0056b3); /* Blue gradient */
+  color: white;                       /* White text */
+  margin-left: auto;                  /* Align to the right */
+  border-bottom-right-radius: 4px;    /* Less rounded bottom-right corner */
+}
+
+/* Bot message styling */
+.bot-message {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef); /* Light gray gradient */
+  color: #333;                        /* Dark text */
+  margin-right: auto;                 /* Align to the left */
+  border-bottom-left-radius: 4px;     /* Less rounded bottom-left corner */
+  border: 1px solid #dee2e6;          /* Light border */
+}
+
+/* Message content styling */
+.message-content {
+  font-size: 14px;                    /* Font size */
+  line-height: 1.4;                   /* Line spacing */
+  margin-bottom: 4px;                 /* Space below content */
+}
+
+.message-content strong {
+  font-weight: 600;                   /* Bold font weight */
+}
+
+/* Message timestamp styling */
+.message-time {
+  font-size: 11px;                    /* Small font for timestamp */
+  opacity: 0.7;                       /* Semi-transparent */
+  text-align: right;                  /* Align to the right */
+}
+
+.user-message .message-time {
+  color: rgba(255, 255, 255, 0.8);    /* Semi-transparent white */
+}
+
+.bot-message .message-time {
+  color: #6c757d;                     /* Gray text */
+}
+
+/* Chat input area */
+.chat-input-area {
+  padding: 20px;                      /* Internal spacing */
+  background-color: #f8f9fa;          /* Light background */
+  border-top: 1px solid #e0e0e0;      /* Top border */
+}
+
+/* Input container */
+.input-container {
+  display: flex;                       /* Use flexbox for layout */
+  gap: 12px;                          /* Space between input and button */
+  margin-bottom: 8px;                 /* Space below input */
+}
+
+/* Message input field */
+#message-input {
+  flex: 1;                            /* Take up remaining space */
+  padding: 12px 16px;                 /* Internal spacing */
+  border: 2px solid #e0e0e0;          /* Border */
+  border-radius: 8px;                 /* Rounded corners */
+  font-size: 14px;                    /* Font size */
+  font-family: 'Roboto', sans-serif;  /* Consistent font */
+  transition: border-color 0.3s ease; /* Smooth border transition */
+}
+
+#message-input:focus {
+  outline: none;                      /* Remove default focus outline */
+  border-color: #007bff;              /* Blue border when focused */
+}
+
+/* Send button styling */
+.send-button {
+  padding: 12px 24px;                 /* Internal spacing */
+  background: linear-gradient(135deg, #28a745, #20c997); /* Green gradient */
+  color: white;                       /* White text */
+  border: none;                        /* No border */
+  border-radius: 8px;                 /* Rounded corners */
+  font-size: 14px;                    /* Font size */
+  font-weight: 500;                   /* Medium font weight */
+  cursor: pointer;                    /* Hand cursor on hover */
+  transition: all 0.3s ease;          /* Smooth transitions */
+  font-family: 'Roboto', sans-serif;  /* Consistent font */
+}
+
+.send-button:hover {
+  transform: translateY(-1px);        /* Lift effect on hover */
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3); /* Green shadow */
+}
+
+.send-button:active {
+  transform: translateY(0);           /* Return to normal on click */
+}
+
+.send-button:disabled {
+  background: #6c757d;                /* Gray when disabled */
+  cursor: not-allowed;                /* Not clickable */
+  transform: none;                    /* No hover effect */
+  box-shadow: none;                   /* No shadow */
+}
+
+/* Input hint text */
+.input-hint {
+  font-size: 12px;                    /* Small font */
+  color: #6c757d;                     /* Gray text */
+  text-align: center;                 /* Center the text */
+}
+
+/* Chat status display */
+.chat-status {
+  padding: 12px 20px;                 /* Internal spacing */
+  background-color: white;            /* White background */
+  border-top: 1px solid #e0e0e0;      /* Top border */
+  text-align: center;                 /* Center the text */
+}
+
+.chat-status p {
+  margin: 0;                          /* Remove default margin */
+  font-size: 12px;                    /* Small font */
+  color: #6c757d;                     /* Gray text */
+}
+
+.chat-status span {
+  font-weight: 500;                   /* Medium font weight */
+  color: #333;                        /* Dark gray text */
+}
+
+/* ======================================== */
+/* TUTORIAL STYLES */
+/* ======================================== */
+
+/* Tutorial steps container */
+.tutorial-steps {
+  margin-bottom: 40px;                /* Space below tutorial */
+}
+
+/* Individual tutorial step */
+.step {
+  margin-bottom: 24px;                /* Space between steps */
+  padding: 20px;                      /* Internal spacing */
+  background-color: #f8f9fa;          /* Light background */
+  border-left: 4px solid #007bff;     /* Blue left border */
+  border-radius: 4px;                 /* Rounded corners */
+}
+
+.step h4 {
+  margin: 0 0 8px 0;                  /* Remove default margin, add bottom margin */
+  font-size: 16px;                    /* Font size */
+  font-weight: 600;                   /* Bold font weight */
+  color: #007bff;                     /* Blue text */
+}
+
+.step p {
+  margin: 0;                          /* Remove default margin */
+  font-size: 14px;                    /* Smaller font */
+  color: #666;                        /* Medium gray text */
+  line-height: 1.5;                   /* Tighter line height */
+}
+
+/* Setup steps container */
+.setup-steps {
+  margin-bottom: 40px;                /* Space below setup */
+}
+
+/* Individual setup step */
+.setup-step {
+  margin-bottom: 20px;                /* Space between steps */
+  padding: 16px;                      /* Internal spacing */
+  background-color: #fff3cd;          /* Light yellow background */
+  border-left: 4px solid #ffc107;     /* Yellow left border */
+  border-radius: 4px;                 /* Rounded corners */
+}
+
+.setup-step h4 {
+  margin: 0 0 8px 0;                  /* Remove default margin, add bottom margin */
+  font-size: 16px;                    /* Font size */
+  font-weight: 600;                   /* Bold font weight */
+  color: #856404;                     /* Dark yellow text */
+}
+
+.setup-step p {
+  margin: 0;                          /* Remove default margin */
+  font-size: 14px;                    /* Smaller font */
+  color: #856404;                     /* Dark yellow text */
+  line-height: 1.5;                   /* Tighter line height */
+}
+
+.setup-step a {
+  color: #0056b3;                     /* Blue link color */
+  text-decoration: none;              /* Remove underline */
+  font-weight: 500;                   /* Medium font weight */
+}
+
+.setup-step a:hover {
+  text-decoration: underline;         /* Add underline on hover */
+}
+
+/* Status display styling */
+.status-display {
+  padding: 16px;                      /* Internal spacing */
+  background-color: #f8f9fa;          /* Light background */
+  border-radius: 8px;                 /* Rounded corners */
+  border: 1px solid #e0e0e0;          /* Light border */
+  margin-bottom: 40px;                /* Space below status */
+}
+
+.status-display p {
+  margin: 0;                          /* Remove default margin */
+  font-size: 14px;                    /* Smaller font */
+  font-weight: 500;                   /* Medium font weight */
+}
+
+/* ======================================== */
+/* RESPONSIVE DESIGN */
+/* ======================================== */
+
+/* Mobile devices (screens smaller than 768px) */
+@media (max-width: 768px) {
+  main {
+    margin: 40px auto;                /* Reduce top/bottom margin */
+    padding: 0 16px;                  /* Reduce left/right padding */
+  }
+
+  header {
+    padding: 16px 20px;               /* Reduce header padding */
+    flex-direction: column;           /* Stack header items vertically */
+    gap: 8px;                         /* Space between header items */
+  }
+
+  .chat-container {
+    margin: 0 0 20px 0;               /* Reduce margins */
+  }
+
+  .chat-messages {
+    height: 300px;                    /* Smaller height for mobile */
+    padding: 16px;                    /* Reduce padding */
+  }
+
+  .message {
+    max-width: 90%;                   /* Wider messages on mobile */
+    padding: 10px 12px;               /* Reduce padding */
+  }
+
+  .chat-input-area {
+    padding: 16px;                    /* Reduce padding */
+  }
+
+  .input-container {
+    flex-direction: column;           /* Stack input and button vertically */
+    gap: 8px;                         /* Reduce gap */
+  }
+
+  .send-button {
+    padding: 10px 20px;               /* Reduce button padding */
+  }
+
+  .step {
+    padding: 16px;                    /* Reduce step padding */
+  }
+}
+
+/* ======================================== */
+/* ANIMATIONS */
+/* ======================================== */
+
+/* Slide in animation for messages */
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Slide out animation for error messages */
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Fade in animation for new messages */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Apply animations to new messages */
+.message {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Typing indicator animation */
+@keyframes typing {
+  0%, 20% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-5px);
+  }
+  60% {
+    transform: translateY(0);
+  }
+  80% {
+    transform: translateY(-3px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* Apply typing animation to status when getting AI response */
+.chat-status.typing span {
+  animation: typing 1.5s infinite;
+}
