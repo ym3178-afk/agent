@@ -456,3 +456,64 @@ p {
 .chat-status.typing span {
   animation: typing 1.5s infinite;
 }
+
+/* Secure web version additions */
+.connection-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+.connection-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #999;
+  flex: 0 0 auto;
+}
+
+.connection-dot.ok { background: #28a745; }
+.connection-dot.error { background: #dc3545; }
+.connection-dot.pending { background: #ffc107; }
+
+.error-message {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #f44336;
+  color: white;
+  padding: 16px 44px 16px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  z-index: 1000;
+  max-width: min(500px, calc(100vw - 40px));
+  max-height: 400px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  border: 2px solid #d32f2f;
+  white-space: pre-wrap;
+}
+
+.error-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  border: 0;
+  background: transparent;
+  color: white;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .error-message {
+    left: 16px;
+    right: 16px;
+    top: 16px;
+    max-width: none;
+  }
+}

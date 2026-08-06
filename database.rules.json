@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "chat": {
+      "messages": {
+        ".read": true,
+        ".write": false
+      }
+    },
+    "apiRateLimits": {
+      ".read": false,
+      ".write": false
+    },
+    ".read": false,
+    ".write": false
+  }
+}
